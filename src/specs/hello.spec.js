@@ -1,3 +1,5 @@
+//How is this minimum bruh JS is complicated for no reason lmaoooo
+
 import { getMessage } from '../hello';
 
 test('has default message', () => {
