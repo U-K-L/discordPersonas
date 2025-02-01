@@ -2,7 +2,7 @@
 import { Client, GatewayIntentBits, Events } from 'discord.js';
 
 // Replace 'YOUR_BOT_TOKEN' with the token from the Discord Developer Portal.
-const TOKEN = 'MTMzNTA3ODEwMTI2ODQzNDk4NQ.GI_WRY.NXajVQp-_HNe_9nyZ0mBRFsQ1PKykOQ---bCb4';
+const TOKEN = process.env.KANALOATOKEN;
 
 // Create a new client instance with the necessary intents.
 const client = new Client({
