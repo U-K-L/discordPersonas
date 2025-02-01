@@ -1,12 +1,34 @@
-import { getMessage } from './hello.js';
-import http from 'http';
+// index.mjs or index.js (if "type": "module" is in package.json)
+import { Client, GatewayIntentBits, Events } from 'discord.js';
 
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end(getMessage());
+// Replace 'YOUR_BOT_TOKEN' with the token from the Discord Developer Portal.
+const TOKEN = 'MTMzNTA3ODEwMTI2ODQzNDk4NQ.GI_WRY.NXajVQp-_HNe_9nyZ0mBRFsQ1PKykOQ---bCb4';
+
+// Create a new client instance with the necessary intents.
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,        // For guild-related events
+    GatewayIntentBits.GuildMessages, // For message events in guilds
+    GatewayIntentBits.MessageContent // To read the content of messages
+  ]
 });
 
-server.listen(8080, () => {
-    console.log('Server running at http://localhost:8080/');
+// When the client is ready, run this code (only once)
+client.once(Events.ClientReady, c => {
+  console.log(`Ready! Logged in as ${c.user.tag}`);
 });
 
+// Listen for messages
+client.on(Events.MessageCreate, message => {
+  // Ignore messages from bots
+  if (message.author.bot) return;
+
+  // Check if the message content is exactly '!hello'
+  if (message.content === '!hello') {
+    // Send "hello" to the same channel
+    message.channel.send('hello');
+  }
+});
+
+// Log in to Discord with your bot's token
+client.login(TOKEN);
