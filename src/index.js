@@ -1,34 +1,44 @@
-// index.mjs or index.js (if "type": "module" is in package.json)
+// src/index.js
+import http from 'http';
 import { Client, GatewayIntentBits, Events } from 'discord.js';
 
-// Replace 'YOUR_BOT_TOKEN' with the token from the Discord Developer Portal.
-const TOKEN = process.env.KANALOATOKEN;
+// Start a minimal HTTP server so Railway's health check passes.
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Bot is running!');
+}).listen(PORT, () => console.log(`HTTP server is running on port ${PORT}`));
 
-// Create a new client instance with the necessary intents.
+// Access your Discord bot token from an environment variable (e.g., KANALOATOKEN).
+const TOKEN = process.env.KANALOATOKEN;
+if (!TOKEN) {
+  console.error('Error: Discord token is missing. Ensure KANALOATOKEN is set.');
+  process.exit(1);
+}
+
+// Create a new Discord client instance with the necessary intents.
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds,        // For guild-related events
-    GatewayIntentBits.GuildMessages, // For message events in guilds
-    GatewayIntentBits.MessageContent // To read the content of messages
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
   ]
 });
 
-// When the client is ready, run this code (only once)
-client.once(Events.ClientReady, c => {
+// When the client is ready, log a message.
+client.once(Events.ClientReady, (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
 });
 
-// Listen for messages
-client.on(Events.MessageCreate, message => {
-  // Ignore messages from bots
+// Listen for messages and respond to !hello.
+client.on(Events.MessageCreate, (message) => {
   if (message.author.bot) return;
-
-  // Check if the message content is exactly '!hello'
   if (message.content === '!hello') {
-    // Send "hello" to the same channel
     message.channel.send('hello');
   }
 });
 
-// Log in to Discord with your bot's token
-client.login(TOKEN);
+// Log in to Discord with your token.
+client.login(TOKEN).catch(error => {
+  console.error('Error logging in:', error);
+});
